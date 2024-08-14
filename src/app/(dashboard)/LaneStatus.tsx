@@ -40,6 +40,7 @@ export default function LaneStatus() {
           <LaneStatusItem key={item.id} id={item.id} name={item.name} status={item.status} />
         ))}
       </Stack>
+
     </Stack>
   );
 }

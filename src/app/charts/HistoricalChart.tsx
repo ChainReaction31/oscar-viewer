@@ -25,7 +25,10 @@ const end = END_TIME
 
 const chartViewRef = useRef(null);
 const HighlighterValue = useSelector((state: RootState) => selectMoveHighlighterTimeStamp(state));
+//TODO replace with actual value for threshold.
+const ThresholdValue = 258
 export default function() {
+
     const chartOccupancyDataSource = new SweApi("asd", {
         protocol: "ws",
         endpointUrl: server,
@@ -75,26 +78,60 @@ export default function() {
             type:'line',
             scales: {
                 y: {
-
+                    beginAtZero: false,
                     title: {
                         display: true,
                         text: "GamaCount",
                         padding: 20
-                    }
+                    },
                 },
+            },
+            plugins: {
+                annotation: {
+                    annotations: {
+                        thresholdLine: {
+                            type: 'line',
+                            yMin: ThresholdValue,
+                            yMax: ThresholdValue,
+                            borderColor: 'orange',
+                            fill:true,
+                            backgroundColor:'rgba(253, 200,50, 0.9)',
+                            borderWidth: 2,
+                            label: {
+                                content: 'Threshold',
+                                enabled: false,
+                                position: 'center'
+                            }
+                        },
+                        highlighterLine: {
+                            type:'line',
+                            xMin: 'Point 2',
+                            xMax:'Point 2',
+                            borderColor: 'red',
+                            fill:true,
+                            backgroundColor:'rgba(253, 200,0, 0.5)',
+                            borderWidth: 2,
+                            label: {
+                                content: 'Threshold',
+                                enabled: false,
+                                position: 'center'
+                            }
+                        },
+                    }
+                }
             }
         },
         datasetOptions: {
             tension: 0.2 // for 'line',
 
         }
-
     });
+
     useEffect(() => {
         if (chartViewRef.current && HighlighterValue !== null) {
             const chart = chartViewRef.current.chart;
 
-            // Update the chart with an annotation for the vertical line
+            // test to see if adding annotation directly to chatJSView props is viable or if it needs to be declared separately.
             chart.options.plugins.annotation = {
                 annotations: {
                     line1: {
@@ -103,7 +140,8 @@ export default function() {
                         xMax: HighlighterValue,
                         borderColor: 'red',
                         borderWidth: 2,
-                    }
+                    },
+
                 }
             };
 
@@ -115,8 +153,7 @@ export default function() {
     );
 
 }
-
-
+//
 
 
 
