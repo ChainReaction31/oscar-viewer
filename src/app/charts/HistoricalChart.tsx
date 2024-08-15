@@ -1,4 +1,4 @@
-
+"use client";
 
 
 import ChartJsView from "osh-js/source/core/ui/view/chart/ChartJsView.js";
@@ -23,56 +23,117 @@ const server ='http://162.238.96.81:8781/sensorhub/api';
 const start = START_TIME
 const end = END_TIME
 
-const chartViewRef = useRef(null);
-const HighlighterValue = useSelector((state: RootState) => selectMoveHighlighterTimeStamp(state));
-//TODO replace with actual value for threshold.
-const ThresholdValue = 258
-export default function() {
 
+
+//TODO replace with actual value for threshold.
+
+// const ThresholdValue = 258
+export default function(OccDataSourceId:string, GamaDataSourceId: string = null, NeutronDataSourceId: string = null, GamaName:string, NeutronName:string = null, Connector: any, ThresholdValue:any) {
+    const chartViewRef = useRef(null);
+    const HighlighterValue = useSelector((state: RootState) => selectMoveHighlighterTimeStamp(state));
+    const [isGamaCurve, setGamaCurve] = useState(null);
+    const [isNeutronCurve, setNeutronCurve] = useState(null);
+
+    //TODO Replace SweApi structure with store/context datasource calls.
+    const gamaName:string = GamaName;
+    const neutronName:string = NeutronName;
     const chartOccupancyDataSource = new SweApi("asd", {
         protocol: "ws",
         endpointUrl: server,
-        resource: `/datastreams/${rpm002OccupancyId}/observations`,
+        resource: `/datastreams/${OccDataSourceId}/observations`,
         startTime: start,
         endTime: end,
         mode: Mode.BATCH
         // tls: secure
 
     });
-    const chartGammaDataSource = new SweApi("asd", {
-        protocol: "ws",
-        endpointUrl: server,
-        resource: `/datastreams/${rpm002GamaId}/observations`,
-        startTime: start,
-        endTime: end,
-        mode: Mode.BATCH
-        // tls: secure
+    if (GamaDataSourceId != null) {
+        const gamaValueDataSource = new SweApi("asd", {
+            protocol: "ws",
+            endpointUrl: server,
+            resource: `/datastreams/${GamaDataSourceId}/observations`,
+            startTime: start,
+            endTime: end,
+            mode: Mode.BATCH
+            // tls: secure
 
-    });
+
+        });
+        const gamaCurve = new CurveLayer({
+            dataSourceId: [gamaValueDataSource.id],
+            getValues: (rec: any) => {
+
+                return {
+                    y: rec.gamaName,
+                }
+
+            },
+            lineColor: 'rgba(38,152,255,0.5)',
+            fill: true,
+            backgroundColor: 'rgba(169,212,255,0.5)',
+            maxValues: 1000,
+            name: gamaName,
+
+        });
+    }
+    if (NeutronDataSourceId != null) {
+        const neutronValueDataSource = new SweApi("asd", {
+            protocol: "ws",
+            endpointUrl: server,
+            resource: `/datastreams/${NeutronDataSourceId}/observations`,
+            startTime: start,
+            endTime: end,
+            mode: Mode.BATCH
+            // tls: secure
+
+        });
+        const neutronCurve = new CurveLayer({
+            dataSourceId: [neutronValueDataSource.id],
+            getValues: (rec:any) => {
+
+                return {
+                    y: rec.neutronName,
+                }
+
+            },
+            lineColor: 'rgba(38,152,255,0.5)',
+            fill: true,
+            backgroundColor: 'rgba(169,212,255,0.5)',
+            maxValues: 1000,
+            name: neutronName,
+
+        });
+
+
+    }
 
 
     const timeCurve = new CurveLayer({
-        dataSourceId: [chartOccupancyDataSource.id, chartGammaDataSource.id],
-        getValues: (rec: any, timeStamp: any) => {
+        dataSourceId: [chartOccupancyDataSource.id],
+        getValues: (timeStamp: any) => {
 
             return {
                 x: timeStamp,
-                y: rec.gamaGrossCount1
             }
 
         },
         lineColor: 'rgba(38,152,255,0.5)',
         fill: true,
         backgroundColor: 'rgba(169,212,255,0.5)',
-        maxValues: 100,
-        name: 'rpm002',
+        maxValues: 1000,
+        name: 'timeStamp',
 
     });
 
 
-    const HistoricalChart = new ChartJsView({
+
+
+
+
+
+        const gamaChartProperties ={
         container: 'chart-historical-container',
-        layers: [timeCurve],
+        layers: [timeCurve, gamaCurve],
         css: "chart-view",
         options: {
             type:'line',
@@ -81,7 +142,7 @@ export default function() {
                     beginAtZero: false,
                     title: {
                         display: true,
-                        text: "GamaCount",
+                        text: gamaName,
                         padding: 20
                     },
                 },
@@ -124,9 +185,11 @@ export default function() {
         datasetOptions: {
             tension: 0.2 // for 'line',
 
-        }
-    });
+        },
 
+
+    };
+chartViewRef.current = HistoricalChart;
     useEffect(() => {
         if (chartViewRef.current && HighlighterValue !== null) {
             const chart = chartViewRef.current.chart;
@@ -153,7 +216,7 @@ export default function() {
     );
 
 }
-//
+
 
 
 

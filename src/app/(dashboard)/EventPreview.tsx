@@ -6,6 +6,7 @@ import { useState } from 'react';
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import AdjudicationSelect from '../_components/AdjudicationSelect';
+import HistoricalChart from "@/app/charts/HistoricalChart";
 
 export default function EventPreview(props: {
   event?: number
