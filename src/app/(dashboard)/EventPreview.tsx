@@ -2,16 +2,24 @@
 
 import { Box, IconButton, SelectChangeEvent, Stack, TextField, Typography } from '@mui/material';
 import Image from "next/image";
-import { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import OpenInFullRoundedIcon from '@mui/icons-material/OpenInFullRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import AdjudicationSelect from '../_components/AdjudicationSelect';
-import HistoricalChart from "@/app/charts/HistoricalChart";
+import {HistoricalGamaChart} from "@/app/charts/HistoricalGamaChart";
 
 export default function EventPreview(props: {
   event?: number
 }) {
   const [selectedEvent, setSelectedEvent] = useState(props.event ? props.event : 0)
+
+
+  let valX =HistoricalGamaChart({
+      // OccDataSourceId:'pifg8k8n12lre',
+      OccDataSourceId:'1tbv8s3niveii',
+     GamaDataSourceId:'9fgu8dcfmv6ti',
+     GamaName:'gammaGrossCount1',
+     ThresholdValue:1269.068573667372});
 
   return (
     <Box>
@@ -35,10 +43,12 @@ export default function EventPreview(props: {
             multiline
             rows={4}
           />
+          <div>{valX}</div>
         </Stack>
       ) : (
         <Image src={"/SiteMap.png"} alt="Site Map" width={0} height={0} sizes={"100vw"} style={{ width: "100%", height: "100%", padding: 10 }} />
       )}
+
     </Box>
   );
 }
