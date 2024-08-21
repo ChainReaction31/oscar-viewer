@@ -8,8 +8,7 @@ import {findInObject} from "@/app/utils/Utils";
 import {Datastream} from "@/lib/data/osh/Datastreams";
 import {useSelector} from "react-redux";
 import {LaneMeta} from "@/lib/data/oscar/LaneCollection";
-import {getDatastreams} from "@/lib/state/OSHSlice";
-import {selectLanes} from "@/lib/state/OSCARClientSlice";
+
 import {FUTURE_END_TIME, Protocols, START_TIME} from "@/lib/data/Constants";
 import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource";
 import {Mode} from "osh-js/source/core/datasource/Mode";

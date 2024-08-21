@@ -12,11 +12,6 @@ import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource";
 import {Protocols} from "@/lib/data/Constants";
 import {Mode} from "osh-js/source/core/datasource/Mode";
 
-const testRows: EventTableData[] = [
-  { id: '1', secondaryInspection: false, laneId: '1', occupancyId: '1', startTime: 'XX:XX:XX AM', endTime: 'XX:XX:XX AM', maxGamma: 25642, status: 'Gamma' },
-  { id: '2', secondaryInspection: false, laneId: '1', occupancyId: '1', startTime: 'XX:XX:XX AM', endTime: 'XX:XX:XX AM', maxNeutron: 25642, status: 'Neutron' },
-  { id: '3', secondaryInspection: false, laneId: '1', occupancyId: '1', startTime: 'XX:XX:XX AM', endTime: 'XX:XX:XX AM', maxGamma: 25642, maxNeutron: 25642, status: 'Gamma & Neutron' },
-];
 
 export default function AlarmTable(props: {
   onRowSelect: (event: SelectedEvent) => void;  // Return start/end time to parent
@@ -121,7 +116,7 @@ export default function AlarmTable(props: {
         //filter item from alarm table by adjudication code, and by the occupancy id
         let filterByAdjudicatedCode = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
         setAlarmBars(prevState=>[newAlarmStatus, ...prevState.filter(item=>
-          item.occupancyId !== occupancyCount
+            item.occupancyId !== occupancyCount
             || filterByAdjudicatedCode.includes(item.adjudicatedCode)
         )
 
@@ -136,8 +131,8 @@ export default function AlarmTable(props: {
     props.onRowSelect(event); // Pass to parent component
   };
 
-   return (
-    <EventTable onRowSelect={handleSelectedRow} data={alarmBars} />
+  return (
+      <EventTable onRowSelect={handleSelectedRow} data={alarmBars} />
   );
 
 }

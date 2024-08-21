@@ -13,8 +13,6 @@ export interface ISystem {
     name: string,
     parentNode: INode,
     parentSystemId: string | null,
-    fetchDataStreams(): Promise<any>,
-    fetchSubsystems(): Promise<any>
 }
 
 export class System implements ISystem {

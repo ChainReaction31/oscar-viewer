@@ -19,7 +19,6 @@ export interface IDatastream {
     tls: boolean,
     playbackMode: string
 
-    equals(other: Datastream): boolean;
     checkIfInObsProperties(propName: string): Promise<boolean>;
 }
 
@@ -42,11 +41,7 @@ export class Datastream implements IDatastream {
         this.playbackMode = playbackMode;
     }
 
-    equals(other: Datastream): boolean {
-        return this.id === other.id;
-    }
-
-    generateSweApiObj(timeRange: { start: string, end: string } | null | undefined): SweApi {
+    generateSweApiObj(timeRange: { start: string, end: string } | null): SweApi {
 
         if (timeRange) {
             this.phenomenonTime.beginPosition = timeRange.start;
@@ -86,11 +81,4 @@ export class Datastream implements IDatastream {
         const resultJson = await resp.json();
         return resultJson.resultSchema.label === propName;
     }
-}
-
-
-export class DatastreamSet<IDatastream> extends Set<IDatastream>{
-    // add(datastream: IDatastream): IDatastream {
-    //     if()
-    // }
 }
