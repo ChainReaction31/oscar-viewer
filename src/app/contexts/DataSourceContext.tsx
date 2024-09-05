@@ -1,30 +1,26 @@
 'use client';
 
-import React, {
-    createContext,
-    MutableRefObject,
-    ReactNode,
-    useContext,
-    useEffect,
-    useMemo,
-    useRef,
-    useState
-} from "react";
+import React, {createContext, MutableRefObject, ReactNode, useCallback, useEffect, useRef} from "react";
 // @ts-ignore
 import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource";
 // @ts-ignore
 import DataSynchronizer from "osh-js/source/core/timesync/DataSynchronizer";
 import {useSelector} from "react-redux";
 import {Datastream} from "@/lib/data/osh/Datastreams";
-import {useAppDispatch, useAppStore} from "@/lib/state/Hooks";
+import {useAppDispatch} from "@/lib/state/Hooks";
 import {INode, Node} from "@/lib/data/osh/Node";
-import {addDatastream, getNodeById, setSystems} from "@/lib/state/OSHSlice";
-import {LaneMeta} from "@/lib/data/oscar/LaneCollection";
+import {
+    addDatasourceToDatastreamEntry,
+    changeConfigNode, createDatasourceOfDatastream,
+    setDatasources,
+    setDatastreams,
+    setSystems
+} from "@/lib/state/OSHSlice";
 import {System} from "@/lib/data/osh/Systems";
 import {setLanes} from "@/lib/state/OSCARClientSlice";
+import {RootState} from "@/lib/state/Store";
 
 interface IDataSourceContext {
-    dataSources: Map<string, typeof SweApi>
     masterTimeSyncRef: MutableRefObject<typeof DataSynchronizer | undefined>
 }
 
@@ -33,23 +29,42 @@ const DataSourceContext = createContext<IDataSourceContext | undefined>(undefine
 
 
 export default function DataSourceProvider({children}: { children: ReactNode }) {
-    const dataStreams: Datastream[] = useSelector((state: any) => state.oshSlice.dataStreams);
-    const mainDataSynchronizer = useSelector((state: any) => state.oshSlice.mainDataSynchronizer);
-    const isInitialized = useSelector((state: any) => state.oshSlice.isInitialized);
-    const configNodeId = useSelector((state: any) => state.oscarClientSlice.configNodeId);
-    const configNode: Node = useSelector((state: any) => getNodeById(state, configNodeId));
+    const mainDataSynchronizer = useSelector((state: RootState) => state.oshSlice.mainDataSynchronizer);
+    // const isInitialized = useSelector((state: RootState) => state.oshSlice.isInitialized);
+    const configNode: Node = useSelector((state: RootState) => state.oshSlice.configNode);
     const dispatch = useAppDispatch();
-    const nodes = useSelector((state: any) => state.oshSlice.nodes);
-    const systems = useSelector((state: any) => state.oshSlice.systems);
+    const nodes = useSelector((state: RootState) => state.oshSlice.nodes);
+    const systems = useSelector((state: RootState) => state.oshSlice.systems);
+    const masterTimeSyncRef = useRef<typeof DataSynchronizer>();
+    const datastreams = useSelector((state: RootState) => state.oshSlice.dataStreams);
+    const dataSources = useSelector((state: RootState) => state.oshSlice.datasources);
+    /*  const selectGammaCountDS = selectDatastreamByOutputType(['Driver - Gamma Count']);
+      const gammaCountDS = useSelector((state: RootState) => selectGammaCountDS(state));*/
 
-    // will need to load from the config file at a later iteration
-    const dataSources = new Map<string, typeof SweApi>()
-    const masterTimeSyncRef = useRef<typeof DataSynchronizer>()
+    /*const northLaneSelector = selectLaneByName('North Lane 1');
+    const northLane: LaneMeta = useSelector((state: RootState) => northLaneSelector(state));
 
-    async function InitializeApplication() {
+    // const selectNorthLaneGammaCountDS = selectDatastreamsOfLaneByTypes(northLane.id,['Driver - Gamma Count']);
+    const selectNorthLaneGammaCountDS = northLane?.id ? selectDatastreamsOfLaneByTypes(northLane.id, ['Driver - Gamma Count']) : (): any[] => [];
+    // const NorthLaneGammaCountDS = useSelector((state: RootState) => selectNorthLaneGammaCountDS(state));
+    const NorthLaneGammaCountDS = useSelector((state: RootState) => selectNorthLaneGammaCountDS(state) ?? []);*/
+
+    const InitializeApplication = useCallback(async () => {
+        if (!configNode) {
+            // if no default node, then just grab the first node in the list and try to use that
+            if (nodes.length > 0) {
+                if (nodes[0].isDefaultNode) {
+                    dispatch(changeConfigNode(nodes[0]));
+                    return; // force a rerender...
+                }
+            }
+            console.error("No config node found in state. Cannot initialize application.");
+        }
+
+        console.log("Initializing application...");
         let cfgEP = configNode.getConfigEndpoint();
         // assume that the local server may have a config file that can be loaded
-        let localConfigResp = await fetch(`${cfgEP}/systems?uid=urn:ornl:client:configs`,{
+        let localConfigResp = await fetch(`${cfgEP}/systems?uid=urn:ornl:client:configs`, {
             headers: {
                 ...configNode.getBasicAuthHeader()
             }
@@ -83,9 +98,9 @@ export default function DataSourceProvider({children}: { children: ReactNode }) 
             let configObj = JSON.parse(configString);
             // TODO Load into state
         }
-    }
+    }, [dispatch, configNode]);
 
-    async function laneFetch() {
+    const laneFetch = useCallback(async () => {
         console.log("Nodes:", nodes);
         await Promise.all(nodes.map(async (node: INode) => {
             return await node.fetchLanes();
@@ -96,77 +111,67 @@ export default function DataSourceProvider({children}: { children: ReactNode }) 
 
             dispatch(setLanes(lanes));
             dispatch(setSystems(systems));
+            console.log("Statewide systems", systems)
         });
         console.info("Lanes fetched, continuing onward...");
-    }
+    }, [nodes, dispatch]);
 
-    async function datastreamFetch() {
-        console.info("Fetching Datastreams...")
-        console.warn("Systems:", systems);
+    const datastreamFetch = useCallback(async () => {
+        console.warn("Fetching datastreams of systems...", systems);
         await Promise.all(systems.map(async (system: System) => {
-            console.warn("Fetching datastreams for system:", system);
             return await system.fetchDataStreams();
         })).then((datastreams) => {
             const combinedDatastreams = datastreams.flat();
+            let datastreamsMap = new Map<string, Datastream>();
             combinedDatastreams.forEach((datastreamJson: any) => {
-                console.log("Datastream retrieved:", datastreamJson);
                 const datastream = new Datastream(datastreamJson.id, datastreamJson.name, datastreamJson["system@id"], [datastreamJson.validTime[0], datastreamJson.validTime[1]]);
-                dispatch(addDatastream(datastream))
+                datastreamsMap.set(datastream.id, datastream);
             });
+            dispatch(setDatastreams(datastreamsMap));
         });
-    }
+    }, [systems, dispatch]);
 
-    useEffect(() => {
-        async function intializeItAll() {
-            await InitializeApplication();
-            await laneFetch();
-            // await datastreamFetch();
+    const createAllDataSources = useCallback(() => {
+        const datastreamArr: Datastream[] = Array.from(datastreams.values());
+        console.warn("Creating all data sources...", datastreamArr);
+        for (let datastream of datastreamArr) {
+            dispatch(createDatasourceOfDatastream({datastreamId: datastream.id}));
         }
-
-        intializeItAll()
-    }, []);
-
-    useMemo(() => {
-        datastreamFetch();
-    }, [systems])
-
-    useMemo(() => {
-        console.log("Datastreams as of now:", dataStreams);
-    }, [dataStreams])
-
-    // useEffect(() => {
-    //     for (let node of allNodes) {
-    //         if (node.id !== configNodeId) {
-    //             await node.fetchSystems();
-    //         }
-    //     }
-    // }, []);
+    }, [datastreams, dispatch]);
 
     useEffect(() => {
-        dataStreams.forEach((datastream) => {
-            const sweApi = datastream.generateSweApiObj()
-            dataSources.set(datastream.id, sweApi)
-        })
+        InitializeApplication();
+        laneFetch();
+    }, [InitializeApplication]);
 
-    }, [dataStreams])
+    useEffect(() => {
+        datastreamFetch();
+    }, [systems]);
+
+    useEffect(() => {
+        if (datastreams.size > 0) {
+            createAllDataSources();
+        }
+    }, [datastreams]);
+
+    useEffect(() => {
+        console.log("DataStreams:", datastreams);
+        console.log("Data sources:", dataSources);
+        /* console.log("Gamma Count DS:", gammaCountDS);
+         console.warn("North Lane Gamma Count DS:", NorthLaneGammaCountDS);*/
+    }, [dataSources]);
 
     if (!masterTimeSyncRef.current) {
-        // get these properties from the store!
         masterTimeSyncRef.current = new DataSynchronizer({...mainDataSynchronizer});
     }
 
 
     return (
-        <DataSourceContext.Provider value={{dataSources, masterTimeSyncRef}}>
+        <DataSourceContext.Provider value={{masterTimeSyncRef}}>
             {children}
         </DataSourceContext.Provider>
     );
+
 };
 
-export const useDSContext = (): IDataSourceContext => {
-    const context = useContext(DataSourceContext);
-    if (!context) {
-        throw new Error('useRefContext must be used within a DataSourceProvider');
-    }
-    return context;
-}
+

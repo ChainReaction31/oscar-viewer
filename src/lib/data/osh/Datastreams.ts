@@ -17,8 +17,10 @@ export interface IDatastream {
     endpointUrl: string,
     phenomenonTime: ITimePeriod,
     tls: boolean,
-    playbackMode: string
+    playbackMode: string,
+    datasource: SweApi | null,
 
+    equals(other: Datastream): boolean;
     checkIfInObsProperties(propName: string): Promise<boolean>;
 }
 
@@ -31,6 +33,7 @@ export class Datastream implements IDatastream {
     phenomenonTime: ITimePeriod | null;
     tls: boolean = false;
     playbackMode: string;
+    datasource: SweApi | null = null;
 
     constructor(id: string, name: string, parentSystemId: string, phenomenonTime: ITimePeriod | null, tls: boolean = false, playbackMode: string = 'real_time') {
         this.id = id;
@@ -41,7 +44,11 @@ export class Datastream implements IDatastream {
         this.playbackMode = playbackMode;
     }
 
-    generateSweApiObj(timeRange: { start: string, end: string } | null): SweApi {
+    equals(other: Datastream): boolean {
+        return this.id === other.id;
+    }
+
+    generateSweApiObj(timeRange: { start: string, end: string } | null | undefined): SweApi {
 
         if (timeRange) {
             this.phenomenonTime.beginPosition = timeRange.start;
@@ -63,6 +70,7 @@ export class Datastream implements IDatastream {
             mode: this.playbackMode
         });
 
+        this.datasource = sweApi;
         return sweApi;
     }
 
@@ -81,4 +89,16 @@ export class Datastream implements IDatastream {
         const resultJson = await resp.json();
         return resultJson.resultSchema.label === propName;
     }
+
+    getSweApi(): SweApi {
+        if (this.datasource === null) {
+            this.generateSweApiObj(null);
+        }
+        return this.datasource;
+    }
+
+    addDatasourceID(id: string) {
+        this.datasourceIDs.push(id);
+    }
 }
+
