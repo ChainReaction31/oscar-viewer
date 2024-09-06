@@ -165,7 +165,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
   ]
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', height: "100%", width: "100%" }}>
       <CssBaseline />
       <AppBar position="fixed" open={drawerOpen} elevation={0} enableColorOnDark>
         <Toolbar>
@@ -280,7 +280,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
           </Link>
         </Divider>
       </Drawer>
-      <Box component="main" sx={{ height: "100%", width: "100%", m: 2 }}>
+      <Box component="main" sx={{ height: "100vh", width: "100%", p: 2, backgroundColor: "background.default" }}>
         <DrawerHeader />
         {children}
       </Box>
