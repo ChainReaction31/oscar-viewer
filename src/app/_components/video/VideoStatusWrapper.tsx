@@ -17,20 +17,20 @@ export default function VideoStatusWrapper(props: PropsWithChildren<VideoStatusW
 
     return (
         <Grid item xs={2} display={"flex"} direction={"column"} alignItems={"center"}
-          sx={{
-            "&.MuiGrid-item": 
-              {...props.status != "none" ? {
-                border: "solid",
-                borderWidth: "2px",
-                borderColor: (props.status == "Alarm" ? "error.main" : "secondary.main"),
-                backgroundColor: (props.status == "Alarm" ? "errorHighlight" : "secondaryHighlight"),
-              } : {},
-              padding: "0px",
-            },
-          }}
+              sx={{
+                  "&.MuiGrid-item":
+                      {...props.status != "none" ? {
+                              border: "solid",
+                              borderWidth: "2px",
+                              borderColor: (props.status == "Alarm" ? "error.main" : "secondary.main"),
+                              backgroundColor: (props.status == "Alarm" ? "errorHighlight" : "secondaryHighlight"),
+                          } : {},
+                          padding: "0px",
+                      },
+              }}
         >
-          {props.children}
-          <Typography variant="body2">{props.lane.name}</Typography>
+            {props.children}
+            <Typography variant="body2">{props.lane.name}</Typography>
         </Grid>
     )
 }

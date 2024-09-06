@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import { Grid, Pagination, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
@@ -25,7 +25,7 @@ interface LaneWithVideo {
 }
 
 /* TODO
-If lane has multiple videostreams, just use one or 
+If lane has multiple videostreams, just use one or
 implement ability to switch between videostreams
 */
 export default function CameraGrid() {
@@ -54,8 +54,8 @@ export default function CameraGrid() {
             tls: false,
             responseFormat: 'application/swe+binary',
             connectorOpts: {
-                username: 'admin',
-                password: 'admin',
+              username: 'admin',
+              password: 'admin',
             }
           });
           source.connect();
@@ -91,8 +91,8 @@ export default function CameraGrid() {
           mode: Mode.REAL_TIME,
           tls: false,
           connectorOpts: {
-              username: 'admin',
-              password: 'admin',
+            username: 'admin',
+            password: 'admin',
           }
         });
         gammaSource.connect();
@@ -105,8 +105,8 @@ export default function CameraGrid() {
           mode: Mode.REAL_TIME,
           tls: false,
           connectorOpts: {
-              username: 'admin',
-              password: 'admin',
+            username: 'admin',
+            password: 'admin',
           }
         });
         neutronSource.connect();
@@ -115,7 +115,7 @@ export default function CameraGrid() {
         // Subscribe datasources
         gammaSource.subscribe((message: any) => {
           const alarmState = message.values[0].data.alarmState;
-          console.log(`Gamma state received from ${lane.name}: ${alarmState}`);
+          // console.log(`Gamma state received from ${lane.name}: ${alarmState}`);
           if(alarmState != "Background" && alarmState != "Scan") {
             updateVideoList(lane.id, alarmState);
           }
@@ -123,7 +123,7 @@ export default function CameraGrid() {
 
         neutronSource.subscribe((message: any) => {
           const alarmState = message.values[0].data.alarmState;
-          console.log(`Neutron state received from ${lane.name}: ${alarmState}`);
+          // console.log(`Neutron state received from ${lane.name}: ${alarmState}`);
           if(alarmState != "Background" && alarmState != "Scan") {
             updateVideoList(lane.id, alarmState);
           }
@@ -135,8 +135,8 @@ export default function CameraGrid() {
 
   const updateVideoList = (id: string, newStatus: string) => {
     setVideoList((prevList) => {
-      const updatedList = prevList.map((videoData) => 
-        videoData.laneData.id === id ? {...videoData, status: newStatus } : videoData
+      const updatedList = prevList.map((videoData) =>
+          videoData.laneData.id === id ? {...videoData, status: newStatus } : videoData
       );
 
       const updatedVideo = updatedList.find((videoData) => videoData.laneData.id === id);
@@ -169,18 +169,18 @@ export default function CameraGrid() {
   };
 
   return (
-    <>
-    {videoList != null && (
-      <Grid container padding={2} justifyContent={"start"}>
-        {videoList.slice(startItem, endItem).map((lane) => (
-          <VideoStatusWrapper key={lane.laneData.id} lane={lane.laneData} status={lane.status} 
-          children={<VideoComponent id={lane.laneData.id} videoSources={lane.videoSources}/>}>
-          </VideoStatusWrapper>
-        ))}
-      <Grid item xs={12} display={"flex"} justifyContent={"center"}>
-        <Pagination count={Math.ceil(videoList.length / maxItems)} onChange={handleChange} color="primary" showFirstButton showLastButton />
-      </Grid>
-    </Grid>)}
-    </>
+      <>
+        {videoList != null && (
+            <Grid container padding={2} justifyContent={"start"}>
+              {videoList.slice(startItem, endItem).map((lane) => (
+                  <VideoStatusWrapper key={lane.laneData.id} lane={lane.laneData} status={lane.status}
+                                      children={<VideoComponent id={lane.laneData.id} videoSources={lane.videoSources}/>}>
+                  </VideoStatusWrapper>
+              ))}
+              <Grid item xs={12} display={"flex"} justifyContent={"center"}>
+                <Pagination count={Math.ceil(videoList.length / maxItems)} onChange={handleChange} color="primary" showFirstButton showLastButton />
+              </Grid>
+            </Grid>)}
+      </>
   );
 }

@@ -15,26 +15,26 @@ export default function LaneStatusItem(props: {
   return (
     <Paper key={props.id} variant='outlined' sx={{ cursor: 'pointer', padding: 1,
       backgroundColor: (
-          props.status == "Alarm"
-              ? "errorHighlight"
-              : props.status == 'Tamper'
-              ? "secondaryHighlight"
-              : props.status.includes('Fault')
-              ? 'infoHighlight'
-              : 'unknown'
+          props.status == "Alarm" ? "errorHighlight"
+              : props.status == 'Tamper' ? "secondaryHighlight"
+              : props.status === ('Fault - Gamma Low') ? 'infoHighlight'
+              : props.status === ('Fault - Neutron Low') ? 'infoHighlight'
+              : props.status === ('Fault - Gamma High') ? 'infoHighlight'
+              : props.status === 'Online' ? 'successHighlight'
+                      : 'unknown'
       )
     }}
     >
       <Stack direction={"row"}>
         <CircleRoundedIcon
             color={(
-                props.status === "Alarm"
-              ? "error"
-              : props.status === 'Tamper'
-              ? "secondary"
-              : props.status.includes('Fault')
-              ? 'info'
-              :'info'
+                props.status === "Alarm" ? "error"
+              : props.status === 'Tamper' ? "secondary"
+              : props.status ==='Fault - Gamma Low' ? 'info'
+              : props.status === 'Fault - Gamma High' ? 'info'
+              : props.status === 'Fault - Neutron Low' ? 'info'
+              : props.status === 'Online' ? 'success'
+                                : 'success'
             )
         }
             sx={{ marginRight: 2 }} />
