@@ -16,8 +16,12 @@ import DataSynchronizer from "osh-js/source/core/timesync/DataSynchronizer";
 
 
 const server ='http://162.238.96.81:8781/sensorhub/api';
-const end = '2024-08-14T18:08:31Z'
-const start = '2024-08-14T17:57:02Z'
+const GamaEnd = ' 2024-08-20T15:18:03Z'
+const GamaStart = '2024-08-20T15:16:41Z'
+const OccStart = '2024-08-20T15:17:21Z'
+const OccEnd = '2024-08-20T15:18:45Z'
+const ThreshStart = '2024-08-20T15:17:23Z'
+const ThreshEnd = '2024-08-20T15:17:48Z'
 
 const TopRight = styled.div`
     display: flex;
@@ -38,7 +42,7 @@ interface HistoricalChartProps {
     NeutronDataSourceId?: string;
     GamaName?:string;
     NeutronName?:string;
-    ThresholdValue:any;
+    ThreshDataSourceId:string;
 
 }
 const initialState: HistoricalChartProps = {
@@ -46,13 +50,14 @@ const initialState: HistoricalChartProps = {
     GamaDataSourceId:'',
     NeutronDataSourceId:'',
     NeutronName:'',
-    ThresholdValue:1269.068573667372
+    ThreshDataSourceId:'',
 }
 
 function HistoricalGamaChart({OccDataSourceId,
                                 GamaDataSourceId,
                                 GamaName,
-                                ThresholdValue}: HistoricalChartProps) {
+                                 ThreshDataSourceId}: HistoricalChartProps) {
+    const [isThreshold, setThreshold] = useState(null);
 
 
 
@@ -69,38 +74,62 @@ function HistoricalGamaChart({OccDataSourceId,
 
     //TODO Replace SweApi structure with store/context datasource calls.
     const gamaName:string = GamaName;
+
     const chartOccupancyDataSource = new SweApi("asd", {
         protocol: "ws",
         endpointUrl: server,
         resource: `/datastreams/${OccDataSourceId}/observations`,
-        startTime: start,
-        endTime: end,
+        startTime: OccStart,
+        endTime: OccEnd,
         mode: Mode.BATCH
         // tls: secure
 
     });
     chartOccupancyDataSource.connect();
-    // useEffect(() => {
+    const chartThresholdDataSource = new SweApi("asd", {
+        protocol: "ws",
+        endpointUrl: server,
+        resource: `/datastreams/${ThreshDataSourceId}/observations`,
+        startTime: OccStart,
+        endTime: OccEnd,
+        mode: Mode.BATCH
+        // tls: secure
+
+    });
+    chartThresholdDataSource.connect();
 
         const gamaValueDataSource = new SweApi("asd", {
             protocol: "ws",
             endpointUrl: server,
             resource: `/datastreams/${GamaDataSourceId}/observations`,
-            startTime: start,
-            endTime: end,
+            startTime: GamaStart,
+            endTime: GamaEnd,
             mode: Mode.BATCH
             // tls: secure
 
 
         });
     gamaValueDataSource.connect();
-    // const dataSynchronizergama = new DataSynchronizer({
-    //     startTime: start,
-    //     endTime: end,
-    //     dataSources: [gamaValueDataSource,chartOccupancyDataSource],
-    //
-    // });
-    // dataSynchronizergama.connect();
+    const dataSynchronizerOcc = new DataSynchronizer({
+        startTime: OccStart,
+        endTime: OccEnd,
+        dataSources: [chartOccupancyDataSource],
+
+    });
+    dataSynchronizerOcc.connect();
+    const dataSynchronizerGama = new DataSynchronizer( {
+        startTime: GamaStart,
+        endTime: GamaEnd,
+        dataSources:[gamaValueDataSource]
+    })
+    dataSynchronizerGama.connect();
+    dataSynchronizerOcc.connect();
+    const dataSynchronizerThresh = new DataSynchronizer( {
+        startTime: ThreshStart,
+        endTime: ThreshEnd,
+        dataSources:[gamaValueDataSource]
+    })
+    dataSynchronizerThresh.connect();
         const gamaCurve = new CurveLayer({
             dataSourceId: [gamaValueDataSource.id],
             getValues: (rec: any) => {
@@ -121,14 +150,29 @@ function HistoricalGamaChart({OccDataSourceId,
 
 
 
+ const threshCurve = new CurveLayer({
+     dataSourceId: [chartThresholdDataSource.id],
+     getValues: (rec:any, threshold: any) => {
+         setThreshold(threshold)
+         return {
+             // x: rec.threshold,
+             y: rec.sigma
+         }
 
+     },
+     lineColor: 'rgba(38,152,255,0.5)',
+     fill: true,
+     backgroundColor: 'rgba(169,212,255,0.5)',
+     maxValues: 1000,
+     name: 'startTime',
+ })
 
     const timeCurve = new CurveLayer({
         dataSourceId: [chartOccupancyDataSource.id],
-        getValues: (timeStamp: any) => {
+        getValues: (rec: any) => {
 
             return {
-                x: timeStamp,
+                x: rec.startTime,
             }
 
         },
@@ -136,7 +180,7 @@ function HistoricalGamaChart({OccDataSourceId,
         fill: true,
         backgroundColor: 'rgba(169,212,255,0.5)',
         maxValues: 1000,
-        name: 'timeStamp',
+        name: 'startTime',
 
     });
 
@@ -171,8 +215,8 @@ useEffect(() => {
                             type: 'line',
                             // yMin: ThresholdValue || 'NA',
                             // yMax: ThresholdValue || 'NA',
-                            yMin: ThresholdValue,
-                            yMax: ThresholdValue,
+                            yMin: isThreshold,
+                            yMax: isThreshold,
                             borderColor: 'orange',
                             fill:true,
                             backgroundColor:'rgba(253, 200,50, 0.9)',
@@ -239,7 +283,7 @@ if(gamaChart) {
     return () => {
         gamaChart.destroy(); // Assuming ChartJsView has a destroy method
     };
-}, [timeCurve, HighlighterValue, ThresholdValue]);
+}, [timeCurve, HighlighterValue]);
 
 
 

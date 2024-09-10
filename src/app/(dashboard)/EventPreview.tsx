@@ -26,11 +26,10 @@ export default function EventPreview(props: {
 
 
   let valX =HistoricalGamaChart({
-      // OccDataSourceId:'pifg8k8n12lre',
-      OccDataSourceId:'1tbv8s3niveii',
-     GamaDataSourceId:'9fgu8dcfmv6ti',
-     GamaName:'gammaGrossCount1',
-     ThresholdValue:1269.068573667372});
+      OccDataSourceId:'qqrijgfgjequa',
+      GamaDataSourceId:'97onprhj6i29i',
+      GamaName:'gammaGrossCount1',
+      ThreshDataSourceId:'385u882nscm8e'});
 
   return (
     <Box>
