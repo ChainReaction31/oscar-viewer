@@ -11,7 +11,7 @@ export default function MapViewPage() {
     const Map = useMemo(() => dynamic(
         () => import('@/app/_components/maps/MapComponent'),
         {
-            loading: () => <p> loading </p>,
+            loading: () => <p> loading... </p>,
             ssr: false
         }
     ),[])

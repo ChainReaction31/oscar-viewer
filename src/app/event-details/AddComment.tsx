@@ -2,7 +2,7 @@
 
 import { Avatar, Box, Button, InputBase, Paper, Stack, TextField, Typography } from "@mui/material";
 import { SelectedEvent } from "types/new-types";
-import AdjudicationSelect from "../_components/AdjudicationSelect";
+import AdjudicationSelect from "../_components/event-preview/AdjudicationSelect";
 import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
 import InsertDriveFileRoundedIcon from '@mui/icons-material/InsertDriveFileRounded';
 import { useState } from "react";

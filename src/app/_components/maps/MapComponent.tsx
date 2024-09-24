@@ -13,6 +13,7 @@ import {DataSourceContext} from "@/app/contexts/DataSourceContext";
 import { LaneWithLocation } from "types/new-types";
 import {selectLaneMap} from "@/lib/state/OSCARClientSlice";
 import "leaflet/dist/leaflet.css"
+import {point} from "leaflet";
 
 
 export default function MapComponent(){
@@ -22,6 +23,8 @@ export default function MapComponent(){
     const mapcontainer: string = "mapcontainer";
 
     const [isInit, setIsInt]= useState(false);
+
+    let pointMarkerRef = useRef<typeof PointMarkerLayer[]> ([]);
 
     /****global datasource references***/
     const {laneMapRef} = useContext(DataSourceContext);
@@ -91,14 +94,16 @@ export default function MapComponent(){
 
                 // autoZoomOnFirstMarker: true
             });
+
             leafletViewRef.current = view;
+            console.log('creating new view', leafletViewRef.current)
             setIsInt(true);
         }
 
     }, [isInit]);
 
 
-     useEffect(() => {
+    useEffect(() => {
         if(locationList && locationList.length > 0 && isInit){
             locationList.forEach((location) => {
                 location.locationSources.forEach((loc) => {
@@ -133,6 +138,7 @@ export default function MapComponent(){
                         orientation: {heading: 0},
                     });
 
+                    // pointMarkerRef.current.push(newPointMarker);
                     leafletViewRef.current?.addLayer(newPointMarker);
                 });
                 location.locationSources.map((src) => src.connect());

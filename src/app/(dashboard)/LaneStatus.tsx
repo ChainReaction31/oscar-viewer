@@ -177,10 +177,6 @@ export default function LaneStatus() {
     timersRef.current.set(laneName, newTimer);
   },[]);
 
-  useEffect(() =>{
-
-  },[]);
-
 
   return (
       <Stack padding={2} justifyContent={"start"} spacing={1}>

@@ -20,7 +20,7 @@ export default function VideoComponent(props: OSHVideoProps) {
         if(hasRendered.current) return;
 
         if(videoView == null && videoDataSource != null) {
-            
+
             const view = new VideoView({
                 container: props.id,
                 showTime: false,
