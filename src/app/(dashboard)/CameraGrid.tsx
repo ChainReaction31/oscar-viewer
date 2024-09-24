@@ -63,8 +63,6 @@ export default function CameraGrid() {
           }
         }
       })
-
-      console.log(videos);
       setVideoList(videos);
     }
   }, [laneMap]);
