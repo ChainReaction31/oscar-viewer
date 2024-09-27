@@ -120,8 +120,7 @@ export default function MapComponent(){
             let view  = new LeafletView({
                 container: mapcontainer,
                 layers: [],
-
-                // autoZoomOnFirstMarker: true
+                autoZoomOnFirstMarker: true
             });
             console.log('new view created')
             leafletViewRef.current = view;

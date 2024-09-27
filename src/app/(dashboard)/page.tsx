@@ -30,7 +30,7 @@ export default function DashboardPage() {
             </Paper>
           </Grid>
           <Grid item xs={4}>
-            <Paper variant='outlined' sx={{ height: "100%" }}>
+            <Paper variant='outlined' sx={{ height: "100%"}}>
               <LaneStatus/>
             </Paper>
           </Grid>
