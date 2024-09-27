@@ -110,8 +110,6 @@ export class LaneMapEntry {
                 },
                 startTime: "2020-01-01T08:13:25.845Z",
                 endTime: "2055-01-01T08:13:25.845Z",
-                // endTime: new Date((new Date().getTime() - 1000000)).toISOString()
-
             });
 
             // this.datasources.push([dsRT, dsBatch]);
@@ -254,6 +252,10 @@ export class LaneDSColl {
     tamperBatch: typeof SweApi[];
     locRT: typeof SweApi[];
     locBatch: typeof SweApi[];
+    gammaThsldBatch: typeof SweApi[];
+    gammaThsldRT: typeof SweApi[];
+    speedRT: typeof SweApi[];
+    speedBatch: typeof SweApi[];
 
     constructor() {
         this.occRT = [];
@@ -266,6 +268,10 @@ export class LaneDSColl {
         this.tamperBatch = [];
         this.locBatch =[];
         this.locRT =[];
+        this.gammaThsldBatch =[];
+        this.gammaThsldRT =[];
+        this.speedBatch=[];
+        this.speedRT=[];
     }
 
     getDSArray(propName: string): typeof SweApi[] {
@@ -298,6 +304,12 @@ export class LaneDSColl {
         for( let ds of this.locBatch){
             ds.subscribe(handler, [EventType.DATA]);
         }
+        for( let ds of this.gammaThsldBatch){
+            ds.subscribe(handler, [EventType.DATA]);
+        }
+        for( let ds of this.speedBatch){
+            ds.subscribe(handler, [EventType.DATA]);
+        }
     }
 
     addSubscribeHandlerToAllRTDS(handler: Function) {
@@ -314,6 +326,12 @@ export class LaneDSColl {
             ds.subscribe(handler, [EventType.DATA]);
         }
         for (let ds of this.locRT){
+            ds.subscribe(handler, [EventType.DATA]);
+        }
+        for (let ds of this.gammaThsldRT){
+            ds.subscribe(handler, [EventType.DATA]);
+        }
+        for (let ds of this.speedRT){
             ds.subscribe(handler, [EventType.DATA]);
         }
     }
@@ -355,6 +373,18 @@ export class LaneDSColl {
             ds.connect();
         }
         for (let ds of this.locBatch){
+            ds.connect();
+        }
+        for (let ds of this.gammaThsldBatch){
+            ds.connect();
+        }
+        for (let ds of this.gammaThsldRT){
+            ds.connect();
+        }
+        for (let ds of this.speedBatch){
+            ds.connect();
+        }
+        for (let ds of this.speedRT){
             ds.connect();
         }
     }

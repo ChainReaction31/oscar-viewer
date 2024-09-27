@@ -12,10 +12,10 @@ interface LaneStatusProps{
 export default function LaneStatus(props: LaneStatusProps) {
 
   const idVal = useRef(1);
-  const {laneMapRef} = useContext(DataSourceContext);
-  const [dataSourcesByLane, setDataSourcesByLane] = useState<Map<string, LaneDSColl>>(new Map<string, LaneDSColl>());
   const [laneStatus, setLaneStatus] = useState<LaneStatusType>();
 
+  const {laneMapRef} = useContext(DataSourceContext);
+  const [dataSourcesByLane, setDataSourcesByLane] = useState<Map<string, LaneDSColl>>(new Map<string, LaneDSColl>());
 
   const datasourceSetup = useCallback(async () => {
     // @ts-ignore

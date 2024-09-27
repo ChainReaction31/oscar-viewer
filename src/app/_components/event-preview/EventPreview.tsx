@@ -58,8 +58,10 @@ export function EventPreview() {
         dispatch(setShouldForceAlarmTableDeselect(true))
     }
 
+    //pass all the necessary components in order to build the page around the occupancy
     const handleExpand = () => {
-        router.push("/event-detail");
+        const {startTime, endTime } = eventPreview.eventData;
+        router.push(`/event-details?startTime=${encodeURIComponent(startTime)}&endTime=${encodeURIComponent(endTime)}`);
     }
 
     useMemo(() => {
@@ -100,8 +102,7 @@ export function EventPreview() {
                 dataSources: videoDatasources,
                 replaySpeed: 1.0,
                 startTime: eventPreview.eventData.startTime,
-                // endTime: eventPreview.eventData.endTime,
-                endTime: "now",
+                endTime: eventPreview.eventData.endTime,
             });
             setDataSyncCreated(true);
         }

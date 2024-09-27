@@ -1,9 +1,10 @@
 "use client";
 
-import { IEventTableData, SelectedEvent } from "types/new-types";
+import { IEventTableData, SelectedEventOcc } from "types/new-types";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from "@mui/material";
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded';
+import {styled} from "@mui/material/styles";
 
 const testData: IEventTableData = {
   id: 1,
@@ -17,11 +18,17 @@ const testData: IEventTableData = {
   adjudicatedUser: "None",
   adjudicatedCode: 0,
 }
+const StatusTableCell = styled(TableCell)(({theme, status }: {theme: any, status: string }) => ({
+  color: status === 'Gamma' ? theme.palette.error.contrastText : status === 'Neutron' ? theme.palette.info.contrastText : status === 'Gamma & Neutron' ? theme.palette.secondary.contrastText : 'inherit',
+  backgroundColor: status === 'Gamma' ? theme.palette.error.main : status === 'Neutron' ? theme.palette.info.main : status === 'Gamma & Neutron' ? theme.palette.secondary.main : 'transparent',
+}));
+
 
 export default function DataRow(props: {
-  event: SelectedEvent;
+  event: SelectedEventOcc;
 }) {
 
+  console.log('props', props.event)
   return (
     <TableContainer>
       <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -39,7 +46,7 @@ export default function DataRow(props: {
         </TableHead>
         <TableBody>
           <TableRow
-            key={testData.id}
+            // key={props.event.id}
             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
           >
             <TableCell align="center">
@@ -49,14 +56,13 @@ export default function DataRow(props: {
                 <CloseRoundedIcon />
               )}
             </TableCell>
-            <TableCell>{testData.laneId}</TableCell>
-            <TableCell>{testData.startTime}</TableCell>
-            <TableCell>{testData.endTime}</TableCell>
-            <TableCell>{testData.maxGamma}</TableCell>
-            <TableCell>{testData.maxNeutron}</TableCell>
-            <TableCell>{testData.status}</TableCell>
-            {/** Adjudicated needs to be adjusted and styled when user details are figured out */}
-            <TableCell>{testData.adjudicatedUser}</TableCell>
+            <TableCell>{props.event.laneId}</TableCell>
+            <TableCell>{props.event.startTime}</TableCell>
+            <TableCell>{props.event.endTime}</TableCell>
+            <TableCell>{props.event.maxGamma}</TableCell>
+            <TableCell>{props.event.maxNeutron}</TableCell>
+            <StatusTableCell status={props.event.status}>{props.event.status}</StatusTableCell>
+            <TableCell>{'kalyn'}</TableCell>
           </TableRow>
         </TableBody>
       </Table>

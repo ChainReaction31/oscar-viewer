@@ -60,16 +60,11 @@ export default function VideoGrid(props: LaneVideoProps) {
     }, [laneMap, props.laneName]);
 
 
+    //this will connect next video
     useEffect(() => {
-        console.log(videoList)
        if(videoList && videoList.length > 0){
-
            videoList[0].videoSources[currentPage].connect();
            console.log('connecting src', videoList[0].videoSources[currentPage].name);
-              // .forEach((src)=> {
-              //     console.log('src', src.name)
-              //     src.connect();
-              // });
        }
     }, [videoList, currentPage]);
 

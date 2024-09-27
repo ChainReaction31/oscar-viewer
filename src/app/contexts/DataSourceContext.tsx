@@ -104,8 +104,7 @@ export default function DataSourceProvider({children}: { children: ReactNode }) 
     }
 
     const testSysFetch = useCallback(async () => {
-        console.log("Received new nodes, updating state\nNodes:");
-        console.log(nodes);
+        console.log("Received new nodes, updating state\nNodes:", nodes);
         let lanes:  Map<string, LaneMapEntry> = new Map();
         await Promise.all(nodes.map(async (node: INode) => {
             console.log("Fetching lanes from node ", node);

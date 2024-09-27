@@ -1,14 +1,14 @@
 "use client";
 
 import { Avatar, Box, Button, InputBase, Paper, Stack, TextField, Typography } from "@mui/material";
-import { SelectedEvent } from "types/new-types";
+import { SelectedEventOcc } from "types/new-types";
 import UploadFileRoundedIcon from '@mui/icons-material/UploadFileRounded';
 import InsertDriveFileRoundedIcon from '@mui/icons-material/InsertDriveFileRounded';
 import { useState } from "react";
 import AdjudicationSelect from "../_components/event-preview/AdjudicationSelect";
 
 export default function AddComment(props: {
-  event: SelectedEvent;
+  event: SelectedEventOcc;
 }) {
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
 

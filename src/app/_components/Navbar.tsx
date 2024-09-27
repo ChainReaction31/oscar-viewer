@@ -203,8 +203,7 @@ export default function Navbar({ children }: { children: React.ReactNode }) {
           </IconButton>
           <Stack direction={"row"} width={"100%"} alignItems={"center"} justifyContent={"space-between"}>
             <Typography variant="h6" noWrap component="div">
-              {/*{changeTitle()}*/}
-              Title
+              OSCAR
               </Typography>
             <IconButton
               color="inherit"
