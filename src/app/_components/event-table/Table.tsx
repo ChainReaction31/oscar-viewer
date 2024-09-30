@@ -83,8 +83,9 @@ export default function Table({tableMode}: TableProps) {
             let obsRes = await initialRes.nextPage();
             allResults.push(...obsRes);
             obsRes.map((obs: any) => {
+                console.log("Observation Result: ", obs);
                 if (obs.result.gammaAlarm === true || obs.result.neutronAlarm === true) {
-                    let newEvent = new EventTableData(idVal.current++, laneName, obs.result, new AdjudicationData('kalyn', 0));
+                    let newEvent = new EventTableData(idVal.current++, laneName, obs.result, new AdjudicationData('N/A', 0));
 
                     let laneEntry = laneMapRef.current.get(laneName);
                     const systemID = laneEntry.lookupSystemIdFromDataStreamId(obs.result.datastreamId);
@@ -108,7 +109,7 @@ export default function Table({tableMode}: TableProps) {
         if (message.values) {
             for (let value of message.values) {
                 if (value.data.gammaAlarm === true || value.data.neutronAlarm === true) {
-                    let newEvent = new EventTableData(idVal.current++, laneName, value.data, new AdjudicationData('kalyn', 0));
+                    let newEvent = new EventTableData(idVal.current++, laneName, value.data, new AdjudicationData('N/A', 0));
 
                     let laneEntry = laneMapRef.current.get(laneName);
                     const systemID = laneEntry.lookupSystemIdFromDataStreamId(value.data.datastreamId);

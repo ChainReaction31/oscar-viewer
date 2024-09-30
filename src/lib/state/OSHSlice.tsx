@@ -9,27 +9,13 @@ import {enableMapSet} from "immer";
 import {RootState} from "../Store";
 // @ts-ignore
 import {INode} from "@/app/data/osh/Node";
-// @ts-ignore
-import {IDatastream} from "@/app/data/osh/Datastreams";
-// @ts-ignore
-import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource.js";
-// @ts-ignore
-import {Mode} from "osh-js/source/core/datasource/Mode";
-import {ITimeSynchronizerProps, TimeSynchronizerProps} from "@/lib/data/osh/TimeSynchronizers";
 import {Node, NodeOptions} from "@/lib/data/osh/Node";
 
 enableMapSet();
 
 export interface IOSHSlice {
-    // nodes: Map<number,INode>,
     nodes: INode[],
-    // currentNodeId: string,
     configNode: INode,
-    dataStreams: Map<string, IDatastream>,
-    mainDataSynchronizer: ITimeSynchronizerProps,
-    datasources: typeof SweApi[],
-    otherDataSynchronizers: ITimeSynchronizerProps[],
-    datasourcesToDatastreams: Map<string, string>
 }
 
 const initialNodeOpts: NodeOptions = {
@@ -52,12 +38,6 @@ const initialNodeOpts: NodeOptions = {
 const initialState: IOSHSlice = {
     nodes: [new Node(initialNodeOpts)],
     configNode: null,
-    dataStreams: new Map<string, IDatastream>(),
-    mainDataSynchronizer: new TimeSynchronizerProps(new Date().toISOString(),
-        "...", 1, 5, [], Mode.REAL_TIME),
-    datasources: [],
-    otherDataSynchronizers: [],
-    datasourcesToDatastreams: new Map<string, string>()
 }
 
 export const Slice = createSlice({

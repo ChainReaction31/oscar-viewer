@@ -59,7 +59,7 @@ export function EventPreview() {
     }
 
     const handleExpand = () => {
-        router.push("/event-detail");
+        router.push("/event-details");
     }
 
     useMemo(() => {
