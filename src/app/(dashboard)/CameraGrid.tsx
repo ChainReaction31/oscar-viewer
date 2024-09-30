@@ -198,18 +198,18 @@ export default function CameraGrid() {
   };
 
   return (
-    <>
-    {videoList != null && (
-      <Grid container padding={2} justifyContent={"start"}>
-        {videoList.slice(startItem, endItem).map((lane) => (
-          <VideoStatusWrapper key={lane.laneName} laneName={lane.laneName} status={lane.status}
-          >
-          </VideoStatusWrapper>
-        ))}
-      <Grid item xs={12} display={"flex"} justifyContent={"center"}>
-        <Pagination count={Math.ceil(videoList.length / maxItems)} onChange={handleChange} color="primary" showFirstButton showLastButton />
-      </Grid>
-    </Grid>)}
-    </>
+      <>
+        {videoList != null && (
+            <Grid container padding={2} justifyContent={"start"}>
+              {videoList.slice(startItem, endItem).map((lane) => (
+                  <VideoStatusWrapper key={lane.laneName} laneName={lane.laneName} status={lane.status}
+                                      children={<VideoComponent id={lane.laneName} currentPage={0} videoSources={lane.videoSources}/>}>
+                  </VideoStatusWrapper>
+              ))}
+              <Grid item xs={12} display={"flex"} justifyContent={"center"}>
+                <Pagination count={Math.ceil(videoList.length / maxItems)} onChange={handleChange} color="primary" showFirstButton showLastButton />
+              </Grid>
+            </Grid>)}
+      </>
   );
 }
