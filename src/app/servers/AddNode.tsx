@@ -97,10 +97,8 @@ export default function NodeForm({isEditNode, modeChangeCallback, editNode}: {
                     <TextField label="Name" name="name" value={newNode.name} onChange={handleChange}/>
                     <TextField label="Address" name="address" value={newNode.address} onChange={handleChange}/>
                     <TextField label="Port" name="port" value={newNode.port} onChange={handleChange}/>
-                    <TextField label="Node Endpoint" name="sosEndpoint" value={newNode.sosEndpoint}
-                               onChange={handleChange}/>
-                    <TextField label="CS API Endpoint" name="csAPIEndpoint" value={newNode.csAPIEndpoint}
-                               onChange={handleChange}/>
+                    <TextField label="Node Endpoint" name="sosEndpoint" value={newNode.sosEndpoint} onChange={handleChange}/>
+                    <TextField label="CS API Endpoint" name="csAPIEndpoint" value={newNode.csAPIEndpoint} onChange={handleChange}/>
                     <Tooltip title={"The endpoint for the configuration API"}>
                         <TextField label="Config Endpoint" name="csAPIConfigEndpoint"
                                    value={newNode.csAPIConfigEndpoint}

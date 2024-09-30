@@ -6,12 +6,12 @@ import "../style/cameragrid.css";
 import { Datastream } from '@/lib/data/osh/Datastreams';
 import { useSelector } from 'react-redux';
 import { LaneDSColl, LaneMapEntry, LaneMeta } from '@/lib/data/oscar/LaneCollection';
-import CameraGridVideo from '../_components/video/VideoComponent';
+import CameraGridVideo from './video/VideoComponent';
 import { selectDatastreams } from '@/lib/state/OSHSlice';
 import { selectLaneMap, selectLanes } from '@/lib/state/OSCARClientSlice';
 import { RootState } from '@/lib/state/Store';
-import VideoComponent from '../_components/video/VideoComponent';
-import VideoStatusWrapper from '../_components/video/VideoStatusWrapper';
+import VideoComponent from './video/VideoComponent';
+import VideoStatusWrapper from './video/VideoStatusWrapper';
 import {EventType} from 'osh-js/source/core/event/EventType';
 import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource"
 import { Protocols } from "@/lib/data/Constants";
@@ -33,6 +33,7 @@ export default function VideoGrid(props: LaneVideoProps) {
     const maxItems = 1;
     const [currentPage, setCurrentPage] = useState(0);
     const [slideDirection, setSlideDirection] = useState<"right"| "left"| undefined>("left");
+    const [maxPages, setMaxPages] = useState(0);
 
 
     const laneMap = useSelector((state: RootState) => selectLaneMap(state));
@@ -63,8 +64,10 @@ export default function VideoGrid(props: LaneVideoProps) {
     //this will connect next video
     useEffect(() => {
        if(videoList && videoList.length > 0){
+
            videoList[0].videoSources[currentPage].connect();
            console.log('connecting src', videoList[0].videoSources[currentPage].name);
+           setMaxPages(videoList[0].videoSources.length);
        }
     }, [videoList, currentPage]);
 
@@ -127,7 +130,7 @@ export default function VideoGrid(props: LaneVideoProps) {
 
                     </Stack>
 
-                    <IconButton onClick={handleNextPage} sx={{margin: 2, cursor: 'pointer'}}>
+                    <IconButton onClick={handleNextPage} sx={{margin: 2, cursor: 'pointer'}} disabled={currentPage === maxPages}>
                         <NavigateNextIcon/>
                     </IconButton>
                 </Box>

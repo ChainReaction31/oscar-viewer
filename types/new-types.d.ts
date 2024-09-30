@@ -3,6 +3,7 @@ import {Datastream} from "@/lib/data/osh/Datastreams";
 import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource";
 import PointMarkerLayer from "osh-js/source/core/ui/layer/PointMarkerLayer";
 import DataSynchronizer from "osh-js/source/core/timesync/DataSynchronizer";
+import {colorCodes} from "@/app/_components/event-preview/AdjudicationSelect";
 
 /**
  * Interface for Event Table data
@@ -76,4 +77,16 @@ export interface LaneStatusItem {
   gammaSources: typeof SweApi[],
   neutronSources: typeof SweApi[],
   tamperSources: typeof SweApi[]
+}
+
+export interface Comment{
+  laneName: string;
+  occupancyId: string;
+  user: string;
+  vehicleId: string;
+  notes: string;
+  files: File[];
+  adjudication: any;
+  isotope: any;
+  secondaryInspection: boolean;
 }

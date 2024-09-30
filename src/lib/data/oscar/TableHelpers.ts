@@ -88,7 +88,7 @@ export class EventTableDataCollection {
         this.data.push(data);
     }
 
-    sortByStartTime(order: string) {
+    sortByStartTime(order: string, data: any) {
         if(order === "ascending"){
             this.data.sort((a, b) => {
                 return a.getStartTimeNum() - b.getStartTimeNum();

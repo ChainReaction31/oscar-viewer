@@ -152,9 +152,15 @@ export default function Table({tableMode}: TableProps) {
         if (tableMode === "alarmtable") {
             let tableData = new EventTableDataCollection()
             tableData.setData(occupancyTableDataRef.current);
+            tableData.sortByStartTime("descending", tableData);
             tableDataRef.current = tableData
+
         } else if (tableMode === "eventlog") {
-            // tableDataRef.current = eventLog;
+            let event = new EventTableDataCollection();
+            event.setData(batchOccupancyTableDataRef.current);
+            event.sortByStartTime("descending", event);
+            tableDataRef.current = event;
+
         } else {
             tableDataRef.current = new EventTableDataCollection();
         }

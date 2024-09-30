@@ -1,6 +1,6 @@
 "use client";
 
-import {Box, List, Stack, Typography } from '@mui/material';
+import {Box, Grid, List, Stack, Typography } from '@mui/material';
 import LaneStatusItem from '../_components/LaneStatusItem';
 import React, {useCallback, useContext, useEffect, useRef, useState} from 'react';
 import Link from "next/link";
@@ -190,30 +190,32 @@ export default function LaneStatus() {
           {/*<Box sx={{overflowY: "auto"}}>*/}
           <Box sx={{overflowY: "auto", maxHeight: 120}}>
             {statusList != null &&(
-                  <Stack spacing={1} sx={{ overflow: "auto", maxHeight: "100%" }}>
+                  <Grid container columns={40} spacing={1}>
                     {statusList.map((item) => (
-                        <Link href={{
-                          pathname: '/lane-view',
-                          query: {
-                            name: item.name,
-                          }
-                        }}
-                              passHref
-                              key={item.name}
-                        >
+                        <Grid item xs={10}>
+                          <Link href={{
+                            pathname: '/lane-view',
+                            query: {
+                              name: item.name,
+                            }
+                          }}
+                                passHref
+                                key={item.name}
+                          >
 
-                          <LaneStatusItem
-                              key={item.id}
-                              id={item.id}
-                              name={item.name}
-                              isOnline={item.isOnline}
-                              isFault={item.isFault}
-                              isTamper={item.isTamper}
-                          />
+                            <LaneStatusItem
+                                key={item.id}
+                                id={item.id}
+                                name={item.name}
+                                isOnline={item.isOnline}
+                                isFault={item.isFault}
+                                isTamper={item.isTamper}
+                            />
 
-                        </Link>
+                          </Link>
+                        </Grid>
                     ))}
-                  </Stack>
+                  </Grid>
             )}
           </Box>
         </>

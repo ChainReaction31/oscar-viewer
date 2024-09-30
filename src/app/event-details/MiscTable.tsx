@@ -16,12 +16,8 @@ export default function MiscTable(props: {
   const [dataSourcesByLane, setDataSourcesByLane] = useState<Map<string, LaneDSColl>>(new Map<string, LaneDSColl>());
 
   const [speed, setSpeed] = useState(0);
-  const [dailyOccupancy, setDailyOccupancy] = useState(0);
-  // const [maxGammaCps, setMaxGammaCps] = useState(0);
-  // const [maxNeutronCps, setMaxNeutronCps] = useState(0);
-  // const [countRate, setCountRate] = useState(0);
-  // const [neutronBkg, setNeutronBkg] = useState(0);
 
+  const laneId = props.event.laneId;
 
   const datasourceSetup = useCallback(async () => {
     // @ts-ignore
@@ -34,14 +30,6 @@ export default function MiscTable(props: {
         let idx: number = lane.datastreams.indexOf(ds);
         let rtDS = lane.datasourcesRealtime[idx];
         let laneDSColl = laneDSMap.get(laneid);
-
-        if (ds.properties.name.includes('Driver - Occupancy')) {
-          laneDSColl.addDS('occupancyRT', rtDS);
-        }
-
-        if (ds.properties.name.includes('Driver - Neutron Count')) {
-          laneDSColl.addDS('neutronRT', rtDS);
-        }
 
         if (ds.properties.name.includes('Driver - Speed')) {
           laneDSColl.addDS('speedRT', rtDS);
@@ -57,17 +45,15 @@ export default function MiscTable(props: {
   }, [laneMapRef.current]);
 
 
-
   const addSubscriptionCallbacks = useCallback(() => {
     for (let [laneName, laneDSColl] of dataSourcesByLane.entries()) {
 
       laneDSColl.addSubscribeHandlerToALLDSMatchingName('speedRT', (message: any) => {
         let speedKph = message.values[0].data.speedKPH;
-        console.log('speed',speedKph)
-        if(props.event.laneId === laneName){
+        if(laneName === laneId){
+          console.log('setting speed')
           setSpeed(speedKph);
         }
-
       });
 
       laneDSColl.connectAllDS();
@@ -79,15 +65,14 @@ export default function MiscTable(props: {
   }, [dataSourcesByLane]);
 
 
-
   return (
     <Box>
       <TableContainer>
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableBody>
             <TableRow>
-              <TableCell>Count Rate</TableCell>
-              <TableCell>Value</TableCell>
+              <TableCell>Max Gamma Count Rate (cps)</TableCell>
+              <TableCell>{props.event.maxGamma}</TableCell>
               <TableCell>Neutron Background Count Rate</TableCell>
               <TableCell>{props.event.neutronBkg}</TableCell>
             </TableRow>
@@ -96,12 +81,6 @@ export default function MiscTable(props: {
               <TableCell>{props.event.maxNeutron}</TableCell>
               <TableCell>Speed (kph)</TableCell>
               <TableCell>{speed}</TableCell>
-            </TableRow>
-            <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell>Max Gamma Count Rate (cps)</TableCell>
-              <TableCell>{props.event.maxGamma}</TableCell>
-              <TableCell>Daily Occupancy</TableCell>
-              <TableCell>{dailyOccupancy}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

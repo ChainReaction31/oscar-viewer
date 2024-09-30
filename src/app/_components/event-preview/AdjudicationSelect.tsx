@@ -1,7 +1,7 @@
 "use client";
 
 import { FormControl, InputLabel, ListSubheader, MenuItem, Select, SelectChangeEvent } from '@mui/material';
-import { useState } from 'react';
+import {useEffect, useState } from 'react';
 
 export const colorCodes = {
   real: { color: "error.dark" },
@@ -12,10 +12,18 @@ export const colorCodes = {
 
 export default function AdjudicationSelect(props: {
   onSelect: (value: string) => void, // Return selected value
-  defaultValue?: string, // Default selected value
+  value?: string, // Default selected value
 }) {
-  const [adjudicated, setAdjudicated] = useState(props.defaultValue || ''); // Adjudication selected value
+  const [adjudicated, setAdjudicated] = useState(props.value || ''); // Adjudication selected value
   const [style, setStyle] = useState(colorCodes.other.color); // Adjudicated button style based on selected value
+
+    useEffect(() => {
+        setAdjudicated(props.value); // Reset local state to prop value
+        if(props.value === ''){
+          setStyle("inherit")
+        }
+
+    }, [props.value]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setAdjudicated(event.target.value); // Set local adjudicated state

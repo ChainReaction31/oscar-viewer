@@ -6,15 +6,12 @@
 
 import {useCallback, useEffect, useRef, useState} from "react";
 import {Typography} from "@mui/material";
-import {useSelector} from "react-redux";
-import {RootState} from "@/lib/state/Store";
-import {selectEventPreview} from "@/lib/state/OSCARClientSlice";
+
 import ChartJsView from "osh-js/source/core/ui/view/chart/ChartJsView.js";
 import CurveLayer from 'osh-js/source/core/ui/layer/CurveLayer.js';
 import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource";
 import annotationPlugin from 'chartjs-plugin-annotation';
 import {Chart, registerables} from 'chart.js';
-import {SelectedEventOcc} from "../../../../types/new-types";
 
 Chart.register(...registerables, annotationPlugin);
 
@@ -23,11 +20,12 @@ export class ChartInterceptProps {
     neutronDatasources: typeof SweApi[];
     occDatasources: typeof SweApi[];
     thresholdDatasources: typeof SweApi[];
-    setChartReady: Function
+    setChartReady: Function;
+    status: string;
 }
 
-export default function ChartTimeHighlight(props: ChartInterceptProps) {
-    const eventPreview = useSelector((state: RootState) => selectEventPreview(state));
+export default function ChartHighlight(props: ChartInterceptProps) {
+
     const [chartsReady, setChartsReady] = useState<boolean>(false);
     const [viewReady, setViewReady] = useState<boolean>(false);
     const [isReadyToRender, setIsReadyToRender] = useState<boolean>(false);
@@ -46,7 +44,7 @@ export default function ChartTimeHighlight(props: ChartInterceptProps) {
     const createCurveLayers = useCallback(() => {
         // console.log("LocalDSMap", localDSMap);
         if (props.thresholdDatasources.length > 0) {
-            // console.log("Threshold DS", props.thresholdDatasources);
+            console.log("Threshold DS", props.thresholdDatasources);
             const tCurve = new CurveLayer({
                 dataSourceIds: props.thresholdDatasources.map((ds) => ds.id),
                 getValues: (rec: any, timestamp: any) => ({x: timestamp, y: rec.threshold}),
@@ -62,9 +60,9 @@ export default function ChartTimeHighlight(props: ChartInterceptProps) {
                 name: "CurrentTime"
             });
         }
-
+        console.log('gamma', props.gammaDatasources)
         if (props.gammaDatasources.length > 0) {
-            // console.log("Gamma DS", props.gammaDatasources);
+            console.log("Gamma DS", props.gammaDatasources);
             const gCurve = new CurveLayer({
                 dataSourceIds: props.gammaDatasources.map((ds) => ds.id),
                 getValues: (rec: any, timestamp: any) => {
@@ -79,7 +77,7 @@ export default function ChartTimeHighlight(props: ChartInterceptProps) {
         }
 
         if (props.neutronDatasources.length > 0) {
-            // console.log("Neutron DS", props.neutronDatasources);
+            console.log("Neutron DS", props.neutronDatasources);
             const nCurve = new CurveLayer({
                 dataSourceIds: props.neutronDatasources.map((ds) => ds.id),
                 getValues: (rec: any, timestamp: any) => {
@@ -96,24 +94,11 @@ export default function ChartTimeHighlight(props: ChartInterceptProps) {
         setChartsReady(true);
     }, [props]);
 
-    const resetView = useCallback(() => {
-        if (!eventPreview.isOpen) {
-            gammaChartViewRef.current.destroy();
-            neutronChartViewRef.current.destroy();
-            gammaChartViewRef.current = null;
-            neutronChartViewRef.current = null;
-            setIsReadyToRender(false);
-        }
 
-    }, [eventPreview]);
-
-    useEffect(() => {
-        resetView();
-    }, [resetView]);
 
     const checkForMountableAndCreateCharts = useCallback(() => {
         if (!gammaChartViewRef.current && !isReadyToRender && thresholdCurve && gammaCurve) {
-            // console.log("Creating Gamma Chart:", thresholdCurve, gammaCurve);
+            console.log("Creating Gamma Chart:", thresholdCurve, gammaCurve);
 
             const container = document.getElementById("chart-view-event-detail-gamma");
             if (container) {
@@ -127,7 +112,7 @@ export default function ChartTimeHighlight(props: ChartInterceptProps) {
         }
 
         if (!neutronChartViewRef.current && !isReadyToRender && neutronCurve) {
-            // console.log("Creating Neutron Chart:", neutronCurve);
+            console.log("Creating Neutron Chart:", neutronCurve);
 
             const containerN = document.getElementById("chart-view-event-detail-neutron");
             if (containerN) {
@@ -173,9 +158,9 @@ export default function ChartTimeHighlight(props: ChartInterceptProps) {
     }, [isReadyToRender]);
 
     const checkForProvidedDataSources = useCallback(() => {
-        // console.log("[CI] Checking for provided data sources...");
+        console.log("[CI] Checking for provided data sources...");
         if (!props.gammaDatasources || !props.neutronDatasources || !props.thresholdDatasources) {
-            // console.warn("No DataSources provided for ChartTimeHighlight");
+            console.warn("No DataSources provided for ChartTimeHighlight");
             return false;
         } else {
             return true;
@@ -186,21 +171,21 @@ export default function ChartTimeHighlight(props: ChartInterceptProps) {
         return (
             <Typography variant="h6">No DataSources provided for ChartIntercept</Typography>
         );
-    } else if (eventPreview.eventData.status === "Gamma") {
+    } else if (props.status === "Gamma") {
         return (
             <div>
                 <Typography variant="h6">Gamma Readings</Typography>
                 <div id="chart-view-event-detail-gamma"></div>
             </div>
         );
-    } else if (eventPreview.eventData.status === "Neutron") {
+    } else if (props.status === "Neutron") {
         return (
             <div>
                 <Typography variant="h6">Neutron Readings</Typography>
                 <div id="chart-view-event-detail-neutron"></div>
             </div>
         );
-    } else if (eventPreview.eventData.status === "Gamma & Neutron") {
+    } else if (props.status === "Gamma & Neutron") {
         return (
             <div>
                 <Typography variant="h6">Gamma Readings</Typography>

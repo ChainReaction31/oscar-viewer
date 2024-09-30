@@ -7,7 +7,7 @@
 
 import {Grid, Typography } from "@mui/material";
 import { SelectedEvent } from "types/new-types";
-import VideoGrid from "./VideoGrid";
+import VideoGrid from "../_components/VideoGrid";
 
 
 export default function Media(props: {
