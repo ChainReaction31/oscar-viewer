@@ -159,7 +159,7 @@ export function EventPreview() {
             </Stack>
             <ChartTimeHighlight gammaDatasources={gammaDatasources} neutronDatasources={neutronDatasources}
                                 thresholdDatasources={thresholdDatasources} occDatasources={occDatasources}
-                                setChartReady={setChartReady}/>
+                                setChartReady={setChartReady} modeType="preview"/>
             <LaneVideoPlayback videoDatasources={videoDatasources} setVideoReady={setVideoReady}
                                dataSynchronizer={syncRef.current}
                                addDataSource={setActiveVideoIDX}/>
