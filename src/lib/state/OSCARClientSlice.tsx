@@ -2,12 +2,7 @@ import {createSelector, createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {enableMapSet} from "immer";
 import {LaneMapEntry, LaneMeta} from "@/lib/data/oscar/LaneCollection";
 import {RootState} from "@/lib/state/Store";
-import {
-    selectDatastreams,
-    selectSystems
-} from "@/lib/state/OSHSlice";
-import {IDatastream} from "@/lib/data/osh/Datastreams";
-import {useSelector} from "react-redux";
+import {selectDatastreams, selectSystems} from "@/lib/state/OSHSlice";
 import {EventTableData} from "@/lib/data/oscar/TableHelpers";
 
 enableMapSet();
@@ -95,45 +90,9 @@ export const {
     toggleShouldForceAlarmTableDeselect
 } = Slice.actions;
 
-export const selectCurrentUser = (state: RootState) => state.oscarClientSlice.currentUser;
 export const selectLanes = (state: RootState) => state.oscarClientSlice.lanes;
-export const selectLaneByName = (laneName: string) => (state: RootState) => {
-    // console.info("Lane Name should be: ", laneName, state.oscarClientSlice.lanes);
-    return state.oscarClientSlice.lanes.find((lane: { name: string }) => lane.name === laneName);
-};
-export const selectLaneById = (laneId: string) => (state: RootState) => {
-    return state.oscarClientSlice.lanes.find((lane: { id: string }) => lane.id === laneId);
-};
 export const selectEventPreview = (state: RootState) => state.oscarClientSlice.eventPreview;
 export const selectLaneMap = (state: RootState) => state.oscarClientSlice.laneMap;
-export const selectShouldForceAlarmTableDeselect = (state: RootState) => state.oscarClientSlice.shouldForceAlarmTableDeselect;
-
-
-// Compound Selectors
-export const selectSystemIdsOfLane = (laneId: string) => createSelector(
-    [selectLaneById(laneId)],
-    (lane) => lane.systemIds
-);
-
-export const selectSystemsOfLane = (laneId: string) => createSelector(
-    [selectSystemIdsOfLane(laneId), selectSystems],
-    (systemIds, systems) => {
-        return systems.filter((system: { id: any; }) => systemIds.includes(system.id));
-    }
-);
-
-export const selectDatastreamsOfLane = (laneId: string) => createSelector(
-    [selectSystemsOfLane(laneId), selectDatastreams],
-    (systems, datastreams) => {
-        // console.log("Found these systems:", systems);
-        let datastreamsArr: IDatastream[] = [];
-        for (let ds of datastreams.values()) {
-            if (systems.find((system: { id: any; }) => system.id === ds.parentSystemId)) {
-                datastreamsArr.push(ds);
-            }
-        }
-        return datastreamsArr;
-    });
 
 
 export default Slice.reducer;

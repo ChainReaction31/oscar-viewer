@@ -2,9 +2,7 @@
 
 import {IEventTableData} from "../../../../types/new-types";
 import {useCallback, useContext, useEffect, useRef, useState} from "react";
-import SweApi from "osh-js/source/core/datasource/sweapi/SweApi.datasource";
 import EventTable from "./EventTable";
-import {IDatastream} from "@/lib/data/osh/Datastreams";
 import {LaneDSColl} from "@/lib/data/oscar/LaneCollection";
 import {DataSourceContext} from "@/app/contexts/DataSourceContext";
 import {AdjudicationData, EventTableData, EventTableDataCollection} from "@/lib/data/oscar/TableHelpers";
@@ -14,19 +12,6 @@ import DataStream from "osh-js/source/core/sweapi/datastream/DataStream.js";
 
 interface TableProps {
     tableMode: "eventlog" | "alarmtable";
-}
-
-interface DSPair {
-    datastream: IDatastream;
-    datasource: typeof SweApi;
-}
-
-interface DatasourceGroup {
-    laneName: string;
-    gammaCountDS: DSPair;
-    neutronCountDS: DSPair;
-    tamperDS: DSPair;
-    occupancyDS: DSPair;
 }
 
 export default function Table({tableMode}: TableProps) {

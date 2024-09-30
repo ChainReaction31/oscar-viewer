@@ -111,48 +111,35 @@ export class Node implements INode {
         }
     }
 
-    async fetchConfig() {
-        return
-    }
-
-    async fetchDataStreams() {
-        // fetch data streams from the server with CSAPI
-        const response = await fetch(`${this.getConnectedSystemsEndpoint()}/datastreams`, {
-            headers: {
-                ...this.getBasicAuthHeader()
-            }
-        });
-        if (response.ok) {
-            const data = await response.json();
-            return data.items;
-        } else {
-            throw new Error(`Failed to fetch systems from node @: ${this.getConnectedSystemsEndpoint()}`);
-        }
-    }
-
     async fetchLanes(): Promise<{ systems: ISystem[]; lanes: LaneMeta[] }> {
         let fetchedLanes: LaneMeta[] = [];
         let fetchedSystems: ISystem[] = [];
+
         // first, fetch the systems
         const systems_arr = await this.fetchSystems();
         console.log("Systems:", systems_arr);
+
         for (let system of systems_arr) {
             console.log("System:", system);
             const newSystem = new System(system.id, system.properties.uid, system.properties.name, this, null);
             console.log("New System:", newSystem);
             fetchedSystems.push(newSystem);
             const uidSplit = system.properties.uid.split(":");
+
             // Test for lane signature in uid
             if (LANEREGEX.test(uidSplit[uidSplit.length - 1])) {
                 console.info("Found System matching lane signature");
                 const newLaneName = system.properties.name;
+
                 // Fetch subsystems
                 const subsystems = await newSystem.fetchSubsystems();
                 fetchedSystems.push(...subsystems);
                 let systemIds = subsystems.map(subsystem => subsystem.id);
                 systemIds.unshift(newSystem.id);
+
                 // Create a new LaneMeta object
                 let newLaneMeta = new LaneMeta(newLaneName, systemIds);
+
                 console.info("New Lane Created:", newLaneMeta);
                 fetchedLanes.push(newLaneMeta);
             }
@@ -168,17 +155,14 @@ export class Node implements INode {
 
         // filter into lanes
         for (let system of systems) {
-            // console.log("TK System:", system);
+
             if (system.properties.properties?.uid.includes("lane")) {
-                // console.log("TK Found lane system:", system);
-                // let laneName = system.properties.properties.uid.split(":").pop();
                 let laneName = system.properties.properties.name;
 
                 if (laneMap.has(laneName)) {
                     laneMap.get(laneName).systems.push(system);
                 } else {
                     laneMap.set(laneName, new LaneMapEntry(this));
-                    // console.log("TK LaneMap:", laneMap, laneName);
                     let entry = laneMap.get(laneName);
                     entry.addSystem(system);
                 }
@@ -190,7 +174,6 @@ export class Node implements INode {
                 }
             }
         }
-
         return laneMap;
     }
 
@@ -235,9 +218,4 @@ export class Node implements INode {
             }
         }
     }
-
-    fetchDatasourcesTK() {
-
-    }
-
 }
